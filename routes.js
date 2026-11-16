@@ -1,17 +1,15 @@
 const express = require('express');
+const path = require('path');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.send('Dashboard');
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-router.get('/users', (req, res) => {
-    res.json([
-        { id: 1, name: 'Anna' },
-        { id: 2, name: 'Ivan' }
-    ]);
 
+router.get('/users', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'users.html'));
 });
 
 module.exports = router;

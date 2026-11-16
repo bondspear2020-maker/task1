@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 
 const app = express();
 
@@ -18,6 +19,8 @@ const router = require('./routes');
 // Парсинг входящих данных
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Подключение маршрутов
 app.use(router);
