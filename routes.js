@@ -1,15 +1,22 @@
-const express = require('express');
-const path = require('path');
-
-const router = express.Router();
-
-router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+const express_framework = require('express');
+const express_framework_router = express_framework.Router();
+//==================================================================//
+express_framework_router.get('/', (req, res) => {
+    let ViewData = {
+        title: 'My application'
+    };
+    res.render('index', ViewData);
 });
+express_framework_router.post('/add-user', (req, res) => {
+    const username = req.body.username;
 
-
-router.get('/users', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'users.html'));
+    res.redirect(`/users?username=${encodeURIComponent(username)}`);
 });
+express_framework_router.get('/users', (req, res) => {
+    let ViewData = {
+        username: req.query.username
+    };
 
-module.exports = router;
+    res.render('users', ViewData);
+});
+module.exports = express_framework_router;
