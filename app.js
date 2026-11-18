@@ -1,5 +1,6 @@
 const express_framework = require('express');
 const handlebars = require('express-handlebars');
+const session = require('express-session');
 const path = require('path');
 const database = require('./configuration/database');
 const application = express_framework();
@@ -12,6 +13,7 @@ application.engine('handlebars', handlebars({
 application.set('view engine', 'handlebars');
 application.set('views', path.join(__dirname, 'views'));
 
+// Database
 database.getConnection()
     .then(connection => {
         console.log('MySQL connected successfully!');
@@ -21,14 +23,27 @@ database.getConnection()
         console.error('MySQL connection error:', error);
     });
 
-// Routes
-const application_router = require('./routes');
 
 // Middleware
 application.use(express_framework.json());
 application.use(express_framework.urlencoded({ extended: true }));
 
-application.use(application_router);
 
-// Start server
+// Sessions
+application.use(session({
+    name: 'sid',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 1000 * 60 * 60
+    }
+}));
+
+// Routes
+const application_router = require('./routes');
+application.use(application_router);
 application.listen(3000);
