@@ -60,10 +60,15 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
-  )
-  .then(result => {
-    app.listen(8080);
-  })
-  .catch(err => console.log(err));
+    .connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
+    .then(() => {
+      console.log('MongoDB connected!');
+
+      app.listen(8080, () => {
+        console.log('Server is running on port 8080');
+      });
+    })
+    .catch(err => console.log(err));
