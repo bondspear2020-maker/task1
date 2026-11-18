@@ -10,6 +10,7 @@ application.engine('handlebars', handlebars({
     defaultLayout: 'main'
 }));
 
+application.use(express_framework.static('public'));
 application.set('view engine', 'handlebars');
 application.set('views', path.join(__dirname, 'views'));
 
