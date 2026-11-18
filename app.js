@@ -1,50 +1,69 @@
-const express_framework = require('express');
-const handlebars = require('express-handlebars');
-const session = require('express-session');
 const path = require('path');
-const database = require('./configuration/database');
-const application = express_framework();
 
-// Handlebars
-application.engine('handlebars', handlebars({
-    defaultLayout: 'main'
-}));
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const multer = require('multer');
 
-application.use(express_framework.static('public'));
-application.set('view engine', 'handlebars');
-application.set('views', path.join(__dirname, 'views'));
+const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 
-// Database
-database.getConnection()
-    .then(connection => {
-        console.log('MySQL connected successfully!');
-        connection.release();
-    })
-    .catch(error => {
-        console.error('MySQL connection error:', error);
-    });
+const app = express();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + '-' + file.originalname);
+  }
+});
 
-// Middleware
-application.use(express_framework.json());
-application.use(express_framework.urlencoded({ extended: true }));
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
+// app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
+app.use(bodyParser.json()); // application/json
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
+);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Sessions
-application.use(session({
-    name: 'sid',
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
-        maxAge: 1000 * 60 * 60
-    }
-}));
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'OPTIONS, GET, POST, PUT, PATCH, DELETE'
+  );
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
-// Routes
-const application_router = require('./routes');
-application.use(application_router);
-application.listen(3000);
+app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
+
+mongoose
+  .connect(
+    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
+  )
+  .then(result => {
+    app.listen(8080);
+  })
+  .catch(err => console.log(err));

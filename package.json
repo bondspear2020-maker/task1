@@ -1,22 +1,28 @@
 {
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "express": "^5.3.0",
-    "express-handlebars": "3.0",
-    "express-session": "^1.19.0",
-    "express-validator": "^7.3.2",
-    "fs": "^0.0.1-security",
-    "mysql2": "^3.24.6",
-    "path": "^0.12.7"
-  },
-  "name": "test",
+  "name": "nodejs-complete-guide",
   "version": "1.0.0",
-  "description": "test",
-  "main": "app.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/udemy-course-nodejs-complete"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "express-validator": "^5.3.0",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.3.2",
+    "multer": "^1.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
 }
