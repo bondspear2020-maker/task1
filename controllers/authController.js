@@ -13,28 +13,41 @@ function getErrorsByField(errors) {
 }
 
 
+function redirectWithErrors(req, res, next, flashData) {
+    req.session.flash = flashData;
+
+    req.session.save((error) => {
+        if (error) return next(error);
+
+        res.redirect('/');
+    });
+}
+
+
 async function register(req, res, next) {
     try {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return res.status(400).render('index', {
+            return redirectWithErrors(req, res, next, {
                 registerErrors: getErrorsByField(errors.array()),
-                registerValues: req.body
+                registerValues: {
+                    username: req.body.username,
+                    email: req.body.email
+                }
             });
         }
 
         const { username, email, password } = req.body;
 
-
         const existingUser = await User.findByEmail(email);
 
         if (existingUser) {
-            return res.status(400).render('index', {
+            return redirectWithErrors(req, res, next, {
                 registerErrors: {
                     email: 'Этот email уже зарегистрирован'
                 },
-                registerValues: req.body
+                registerValues: { username, email }
             });
         }
 
@@ -45,7 +58,6 @@ async function register(req, res, next) {
             email,
             passwordHash
         );
-
 
         req.session.regenerate((error) => {
             if (error) return next(error);
@@ -74,9 +86,11 @@ async function login(req, res, next) {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return res.status(400).render('index', {
+            return redirectWithErrors(req, res, next, {
                 loginErrors: getErrorsByField(errors.array()),
-                loginValues: req.body
+                loginValues: {
+                    email: req.body.email
+                }
             });
         }
 
@@ -90,14 +104,13 @@ async function login(req, res, next) {
         );
 
         if (!passwordMatch) {
-            return res.status(401).render('index', {
+            return redirectWithErrors(req, res, next, {
                 loginErrors: {
                     password: 'Неверный пароль'
                 },
-                loginValues: req.body
+                loginValues: { email }
             });
         }
-
 
         req.session.regenerate((error) => {
             if (error) return next(error);

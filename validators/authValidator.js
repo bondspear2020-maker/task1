@@ -13,6 +13,7 @@ const registerValidator = [
         .trim()
         .isEmail()
         .withMessage('Введите корректный email')
+        .bail()
         .normalizeEmail(),
 
     body('password')
@@ -26,6 +27,7 @@ const loginValidator = [
         .trim()
         .isEmail()
         .withMessage('Введите корректный email')
+        .bail()
         .normalizeEmail()
         .custom(async (email) => {
             const user = await User.findByEmail(email);

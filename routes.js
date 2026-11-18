@@ -9,8 +9,14 @@ express_framework_router.get('/', (req, res) => {
     if (req.session.user) {
         return res.redirect('/dashboard');
     }
-    res.render('index');
+
+    const flash = req.session.flash || {};
+    delete req.session.flash;
+    res.render('index', {
+        ...flash
+    });
 });
+
 
 express_framework_router.post('/register', registerValidator, authController.register);
 

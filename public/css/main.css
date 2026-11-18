@@ -68,3 +68,9 @@ h1 {
 .auth-card button:hover {
     background: #3564e8;
 }
+
+.error {
+    color: #dc2626;
+    font-size: 13px;
+    margin: -10px 0 12px;
+}
