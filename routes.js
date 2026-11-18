@@ -9,14 +9,8 @@ express_framework_router.get('/', (req, res) => {
 });
 express_framework_router.post('/add-user', (req, res) => {
     const username = req.body.username;
-
-    res.redirect(`/users?username=${encodeURIComponent(username)}`);
+        
+    res.redirect('/');
 });
-express_framework_router.get('/users', (req, res) => {
-    let ViewData = {
-        username: req.query.username
-    };
 
-    res.render('users', ViewData);
-});
 module.exports = express_framework_router;
