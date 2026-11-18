@@ -59,16 +59,20 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose
-    .connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-    .then(() => {
-      console.log('MongoDB connected!');
 
-      app.listen(3000, () => {
-        console.log('Server is running on port 3000');
-      });
-    })
-    .catch(err => console.log(err));
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+
+    console.log('MongoDB connected!');
+
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+
+startServer();
